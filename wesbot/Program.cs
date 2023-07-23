@@ -99,20 +99,17 @@ namespace wesbot
         {
             var commands = _services.GetRequiredService<CommandService>();
             var client = _services.GetRequiredService<DiscordSocketClient>();
-            var commandRegistrationManager = _services.GetRequiredService<SlashCommandGenerator>();
 
-            client.Ready += commandRegistrationManager.RegisterCommands;
-            client.Log += Log;
             commands.Log += Log;
+            client.Log += Log;
+            client.SlashCommandExecuted += _services.GetRequiredService<AggregateSlashCommandHandler>().HandleSlashCommand;
+            client.Ready += _services.GetRequiredService<SlashCommandGenerator>().GenerateCommands;
+            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
 
             // Login and start bot
             await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordToken"));
             await client.StartAsync();
-
-            // Hook up handlers
-            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
-            _services.GetRequiredService<AggregateSlashCommandHandler>().SetupSlashCommandsHandle();
-
+            
             // Wait infinitely so your bot actually stays connected.
             await Task.Delay(Timeout.Infinite);
         }

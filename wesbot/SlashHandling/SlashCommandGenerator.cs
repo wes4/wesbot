@@ -15,7 +15,7 @@ namespace wesbot.SlashHandling
             _commands = commands;
         }
 
-        public async Task RegisterCommands()
+        public async Task GenerateCommands()
         {
             foreach (var command in _commands)
             {
@@ -24,7 +24,7 @@ namespace wesbot.SlashHandling
                     if (command.CommandType == SlashCommandType.Global)
                     {
                         var properties = command.Build();
-                        await _client.CreateGlobalApplicationCommandAsync(properties);
+                        // await _client.CreateGlobalApplicationCommandAsync(properties);
                     }
                     else
                     {

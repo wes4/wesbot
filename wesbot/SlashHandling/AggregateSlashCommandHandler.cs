@@ -13,12 +13,7 @@ namespace wesbot.SlashHandling
             _handlers = handlers;
         }
 
-        public void SetupSlashCommandsHandle()
-        {
-            _client.SlashCommandExecuted += HandleSlashCommand;
-        }
-
-        private async Task HandleSlashCommand(SocketSlashCommand command)
+        public async Task HandleSlashCommand(SocketSlashCommand command)
         {
             var handler = _handlers.FirstOrDefault(h => h.CommandName == command.Data.Name);
             if (handler != null)
