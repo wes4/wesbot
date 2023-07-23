@@ -4,9 +4,6 @@ using Discord.WebSocket;
 using wesbot.PrefixHandling;
 using wesbot.SlashHandling;
 using Microsoft.Extensions.DependencyInjection;
-using Discord.Net;
-using Newtonsoft.Json;
-using System;
 
 namespace wesbot
 {
@@ -53,6 +50,7 @@ namespace wesbot
                 })
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<AggregateSlashCommandHandler>()
+                .AddSingleton<SlashCommandGenerator>()
                 .AddTransient<SlashCommandBuilder>();
 
             // Dynamically load all implementations of ISlashCommandHandler
@@ -101,8 +99,9 @@ namespace wesbot
         {
             var commands = _services.GetRequiredService<CommandService>();
             var client = _services.GetRequiredService<DiscordSocketClient>();
+            var commandRegistrationManager = _services.GetRequiredService<SlashCommandGenerator>();
 
-            client.Ready += OnClientReady;
+            client.Ready += commandRegistrationManager.RegisterCommands;
             client.Log += Log;
             commands.Log += Log;
 
@@ -116,36 +115,6 @@ namespace wesbot
 
             // Wait infinitely so your bot actually stays connected.
             await Task.Delay(Timeout.Infinite);
-        }
-
-        private async Task OnClientReady()
-        {
-            var client = _services.GetRequiredService<DiscordSocketClient>();
-            var slashCommands = _services.GetRequiredService<IEnumerable<ISlashCommand>>();
-            foreach (var command in slashCommands)
-            {
-                try
-                {
-                    if (command.CommandType == SlashCommandType.Global)
-                    {
-                        // await client.CreateGlobalApplicationCommandAsync(command.Build(_services.GetRequiredService<SlashCommandBuilder>()));
-                    }
-                    else
-                    {
-                        //// TODO: GuildId?
-                        //var guild = client.GetGuild(guildId);
-                        //await guild.CreateApplicationCommandAsync(command.Build(_services.GetRequiredService<SlashCommandBuilder>()));
-                    } 
-                }
-                catch (HttpException exception)
-                {
-                    // If our command was invalid, we should catch an ApplicationCommandException. This exception contains the path of the error as well as the error message. You can serialize the Error field in the exception to get a visual of where your error is.
-                    var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-
-                    // You can send this error somewhere or just print it to the console, for this example we're just going to print it.
-                    Console.WriteLine(json);
-                }
-            }
         }
     }
 }

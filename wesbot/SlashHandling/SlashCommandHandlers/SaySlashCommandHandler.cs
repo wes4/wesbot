@@ -5,9 +5,16 @@ namespace wesbot.SlashHandling.SlashCommandHandlers
 {
     public class SaySlashCommandHandler : ISlashCommand
     {
+        private readonly SlashCommandBuilder _builder;
+
         public string CommandName => EnumExtensions.GetEnumDescription(SlashCommands.Say);
 
         public SlashCommandType CommandType => SlashCommandType.Global;
+
+        public SaySlashCommandHandler(SlashCommandBuilder builder) 
+        {
+            _builder = builder;
+        }
 
         public async Task Handle(SocketSlashCommand command)
         {
@@ -15,14 +22,14 @@ namespace wesbot.SlashHandling.SlashCommandHandlers
             await command.RespondAsync(responseText, ephemeral: false);
         }
 
-        public SlashCommandProperties Build(SlashCommandBuilder commandBuilder)
+        public SlashCommandProperties Build()
         {
             var description = EnumExtensions.GetEnumDescription(SlashCommands.Say);
-            commandBuilder.WithName(description);
-            commandBuilder.WithDescription("Replies with text.");
-            commandBuilder.AddOption("text", ApplicationCommandOptionType.String, "The text reply content.", isRequired: true);
+            _builder.WithName(description);
+            _builder.WithDescription("Replies with text.");
+            _builder.AddOption("text", ApplicationCommandOptionType.String, "The text reply content.", isRequired: true);
 
-            return commandBuilder.Build();
+            return _builder.Build();
         }
     }
 }

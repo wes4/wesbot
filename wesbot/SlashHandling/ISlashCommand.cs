@@ -11,6 +11,6 @@ namespace wesbot.SlashHandling
 
         Task Handle(SocketSlashCommand command);
 
-        SlashCommandProperties Build(SlashCommandBuilder commandBuilder);
+        SlashCommandProperties Build();
     }
 }
