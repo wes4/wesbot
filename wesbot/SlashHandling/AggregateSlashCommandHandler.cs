@@ -4,12 +4,10 @@ namespace wesbot.SlashHandling
 {
     public class AggregateSlashCommandHandler
     {
-        private readonly DiscordSocketClient _client;
         private readonly IEnumerable<ISlashCommand> _handlers;
 
-        public AggregateSlashCommandHandler(DiscordSocketClient client, IEnumerable<ISlashCommand> handlers)
+        public AggregateSlashCommandHandler(IEnumerable<ISlashCommand> handlers)
         {
-            _client = client;
             _handlers = handlers;
         }
 
